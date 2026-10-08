@@ -1,0 +1,7 @@
+[Unit]
+Description=Update Gimenez from GitHub (only if all tests pass)
+
+[Service]
+Type=oneshot
+Nice=10
+ExecStart=/opt/gimenez/deploy/update.sh

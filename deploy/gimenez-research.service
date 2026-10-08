@@ -1,0 +1,22 @@
+[Unit]
+Description=Gimenez strategy research (low priority, capped)
+After=gimenez.service
+
+[Service]
+User=gimenez
+WorkingDirectory=/opt/gimenez
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/gimenez/.venv/bin/python -m gimenez research
+Restart=always
+RestartSec=60
+# Research must never starve live trading (Gimenez's or TIIM's):
+# lowest CPU priority, at most half a CPU, idle-only disk access, hard memory cap.
+Nice=19
+CPUWeight=5
+CPUQuota=50%
+IOSchedulingClass=idle
+MemoryHigh=350M
+MemoryMax=450M
+
+[Install]
+WantedBy=multi-user.target

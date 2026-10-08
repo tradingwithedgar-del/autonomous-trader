@@ -1,0 +1,9 @@
+[Unit]
+Description=Check for Gimenez updates every 15 minutes
+
+[Timer]
+OnBootSec=7min
+OnUnitActiveSec=15min
+
+[Install]
+WantedBy=timers.target

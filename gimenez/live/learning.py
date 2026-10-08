@@ -129,12 +129,12 @@ def review(j: Journal, s: Settings) -> list[str]:
             n = len(real)
             z = gap_z(np.array(real), bt_mean, bt_std)
             recent = real[-p.decay_window:]
-            dd_limit = drawdown_quantile(np.array(bt_r), max(1, n), 0.95) if bt_r else float("inf")
+            dd_limit = drawdown_quantile(np.array(bt_r), max(1, n), 0.99) if bt_r else float("inf")
             st_real = summarize(np.array(real))
             if n >= 10 and z < p.gap_z_retire:
                 new, why = "retired", f"live {st_real['mean']:+.2f}R vs backtest {bt_mean:+.2f}R (z={z:+.1f}): the edge isn't real or has gone"
             elif n >= 10 and st_real["max_dd"] > dd_limit:
-                new, why = "retired", f"live drawdown {st_real['max_dd']:.1f}R is worse than 95% of backtest scenarios ({dd_limit:.1f}R)"
+                new, why = "retired", f"live drawdown {st_real['max_dd']:.1f}R is worse than 99% of backtest scenarios ({dd_limit:.1f}R)"
             elif len(recent) >= p.decay_window and np.mean(recent) < 0 and bootstrap_mean_ci(np.array(recent), 0.9)[1] < 0.05:
                 new, why = "retired", f"edge decayed: last {len(recent)} trades {np.mean(recent):+.2f}R"
             elif stage == "probation" and n >= p.probation_trades and st_real["mean"] > 0 and z > -2.0:

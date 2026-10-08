@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS watchlist (
 );
 """
 
-JSON_COLS = {"genome", "report", "odds", "features", "snapshot", "postmortem", "state", "data", "paused"}
+JSON_COLS = {"genome", "report", "odds", "features", "snapshot", "postmortem", "state", "data", "paused", "summary"}
 STAGES_LIVE = ("probation", "active", "proven")
 STAGES_RUNNING = ("shadow",) + STAGES_LIVE
 

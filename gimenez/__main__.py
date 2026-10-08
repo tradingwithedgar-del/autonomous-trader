@@ -131,6 +131,10 @@ def cmd_resume(a) -> None:
     print("Resumed." + (f" (was halted: {was})" if was else ""))
 
 
+def cmd_note(a) -> None:
+    _journal(Settings()).event("update", " ".join(a.text))
+
+
 def cmd_screen(a) -> None:
     j = _journal(Settings())
     j.set("last_screen", None)
@@ -189,6 +193,9 @@ def main(argv=None) -> None:
     sub.add_parser("stop", help="no new real trades").set_defaults(fn=cmd_stop)
     sub.add_parser("resume", help="allow trading again (also clears a drawdown halt)").set_defaults(fn=cmd_resume)
     sub.add_parser("screen", help="re-screen all markets now").set_defaults(fn=cmd_screen)
+    nt = sub.add_parser("note")
+    nt.add_argument("text", nargs="+")
+    nt.set_defaults(fn=cmd_note)
     st = sub.add_parser("selftest", help="prove the overfitting filter works on synthetic data")
     st.add_argument("--seeds", type=int, default=3)
     st.set_defaults(fn=cmd_selftest)

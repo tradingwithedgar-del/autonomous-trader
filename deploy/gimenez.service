@@ -1,0 +1,19 @@
+[Unit]
+Description=Gimenez live trader (TradeLocker demo)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=gimenez
+WorkingDirectory=/opt/gimenez
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/gimenez/.venv/bin/python -m gimenez run
+Restart=always
+RestartSec=30
+# Live trading gets priority over everything else Gimenez does.
+Nice=0
+MemoryHigh=300M
+MemoryMax=400M
+
+[Install]
+WantedBy=multi-user.target

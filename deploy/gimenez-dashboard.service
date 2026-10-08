@@ -1,0 +1,15 @@
+[Unit]
+Description=Gimenez dashboard (read-only, password protected, port 8001)
+After=network-online.target
+
+[Service]
+User=gimenez
+WorkingDirectory=/opt/gimenez
+ExecStart=/opt/gimenez/.venv/bin/python -m gimenez dashboard --host 0.0.0.0 --port 8001
+Restart=always
+RestartSec=30
+Nice=5
+MemoryMax=200M
+
+[Install]
+WantedBy=multi-user.target

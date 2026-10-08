@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gimenez</title>
+<script src="/vendor/lightweight-charts.js"></script>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f7f7f4; --surface: #ffffff; --ink: #111; --ink-2: #55544f; --muted: #8a8880;
+  --grid: #e6e5df; --axis: #c9c8bf; --ring: rgba(0,0,0,0.09);
+  --accent: #2a6fdb; --up: #16a34a; --down: #dc2626; --warn: #d97706; --good: #15803d;
+  --v-none: #6b7280; --v-promising: #d97706; --v-proven: #15803d; --v-failing: #dc2626;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0e0e0d; --surface: #191918; --ink: #f5f5f4; --ink-2: #c4c3bb; --muted: #8a8880;
+    --grid: #2a2a28; --axis: #3a3a37; --ring: rgba(255,255,255,0.09);
+    --accent: #5b9cf6; --up: #22c55e; --down: #f05252; --warn: #f59e0b; --good: #22c55e;
+    --v-none: #9ca3af; --v-promising: #f59e0b; --v-proven: #22c55e; --v-failing: #f05252;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0e0e0d; --surface: #191918; --ink: #f5f5f4; --ink-2: #c4c3bb; --muted: #8a8880;
+  --grid: #2a2a28; --axis: #3a3a37; --ring: rgba(255,255,255,0.09);
+  --accent: #5b9cf6; --up: #22c55e; --down: #f05252; --warn: #f59e0b; --good: #22c55e;
+  --v-none: #9ca3af; --v-promising: #f59e0b; --v-proven: #22c55e; --v-failing: #f05252;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { position: sticky; top: 0; z-index: 5; background: var(--page); border-bottom: 1px solid var(--ring); padding: 10px 16px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+h1 { font-size: 17px; margin: 0; letter-spacing: .02em; }
+h2 { font-size: 15px; margin: 0 0 8px; }
+h3 { font-size: 12px; margin: 0 0 6px; color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; }
+nav { display: flex; gap: 4px; overflow-x: auto; margin-top: 8px; scrollbar-width: none; }
+nav button { flex: none; font: inherit; border: 1px solid var(--ring); background: var(--surface); color: var(--ink-2); padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+nav button.on { background: var(--ink); color: var(--page); border-color: var(--ink); }
+main { padding: 12px 16px 48px; max-width: 1200px; margin: 0 auto; }
+.card { background: var(--surface); border: 1px solid var(--ring); border-radius: 12px; padding: 14px; margin-bottom: 12px; min-width: 0; }
+.verdict { border-left: 6px solid var(--v-none); }
+.verdict .label { font-size: 26px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; }
+.verdict ul { margin: 6px 0 0; padding-left: 18px; color: var(--ink-2); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.tile { background: var(--surface); border: 1px solid var(--ring); border-radius: 10px; padding: 10px 12px; }
+.tile .k { color: var(--ink-2); font-size: 12px; }
+.tile .v { font-size: 20px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.tile .d { color: var(--muted); font-size: 11px; }
+.chart { width: 100%; height: 300px; position: relative; }
+.chart.tall { height: 460px; }
+.tw { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--grid); white-space: nowrap; vertical-align: top; }
+th { color: var(--ink-2); font-weight: 600; font-size: 12px; }
+tr.click { cursor: pointer; }
+tr.click:hover td { background: var(--grid); }
+.pos { color: var(--up); } .neg { color: var(--down); } .muted { color: var(--muted); }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; border: 1px solid var(--ring); }
+.st-proven { color: var(--v-proven); } .st-active { color: var(--accent); } .st-probation { color: var(--warn); }
+.st-shadow { color: var(--ink-2); } .st-retired { color: var(--muted); text-decoration: line-through; } .st-validated { color: var(--ink-2); }
+.tag { display: inline-block; padding: 1px 6px; margin: 1px; border-radius: 4px; background: var(--grid); color: var(--ink-2); font-size: 11px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+.box { border: 1px solid var(--ring); border-radius: 8px; padding: 10px; }
+.box p { margin: 3px 0; }
+pre { white-space: pre-wrap; word-break: break-word; font: 12.5px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; margin: 0; }
+.sub { color: var(--ink-2); font-size: 13px; margin: -4px 0 10px; }
+.wrap { white-space: normal; }
+.events li { padding: 6px 0; border-bottom: 1px solid var(--grid); list-style: none; }
+.events { padding: 0; margin: 0; max-height: 420px; overflow-y: auto; }
+.kind { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); margin-right: 6px; }
+.empty { color: var(--muted); padding: 18px; text-align: center; }
+.alive { font-size: 12px; color: var(--muted); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: 5px; }
+button.link { background: none; border: 0; color: var(--accent); cursor: pointer; padding: 0; font: inherit; }
+.backbar { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+@media (max-width: 600px) { .chart.tall { height: 380px; } .verdict .label { font-size: 22px; } th, td { padding: 6px 6px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>GIMENEZ <span class="muted" id="mode" style="font-weight:400"></span></h1>
+    <span class="alive"><span class="dot" id="alivedot"></span><span id="alive">connecting...</span></span>
+  </div>
+  <nav id="nav">
+    <button data-tab="overview" class="on">Scorecard</button>
+    <button data-tab="strategies">Strategies</button>
+    <button data-tab="trades">Trades</button>
+    <button data-tab="decisions">Setups</button>
+    <button data-tab="research">Research</button>
+    <button data-tab="markets">Markets</button>
+    <button data-tab="why">Why</button>
+  </nav>
+</header>
+<main id="main"><div class="empty">Loading...</div></main>
+<script src="/app.js"></script>
+</body>
+</html>

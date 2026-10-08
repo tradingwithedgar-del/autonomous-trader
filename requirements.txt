@@ -1,0 +1,8 @@
+tradelocker>=0.56,<0.60
+numpy>=1.26
+pandas>=2.0
+fastapi>=0.110
+uvicorn>=0.29
+python-dotenv>=1.0
+pytest>=8.0
+httpx>=0.27
